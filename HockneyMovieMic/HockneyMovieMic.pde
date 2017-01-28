@@ -11,10 +11,10 @@ import java.util.*;
 import java.text.*;
 
 /* options */
-int grid_x = 12;
+int grid_x = 16;
 int grid_y = 9;
 int border = 1;
-int buffer_max = 60;
+int buffer_max = 150;
 float mic_level = 1;
 int scale_factor = 1;
 
@@ -31,8 +31,8 @@ boolean dragged = false;
 boolean stopped = false;
 SDrop drop; // drag and drop object
 
-int cam_x = 800;
-int cam_y = 600;
+int cam_x = 1280;
+int cam_y = 720;
 
 int jitter = 50;
 int delay = 20;
@@ -219,7 +219,7 @@ void selectVideo(File selection) {
 
 void prepareCamera() {
   cam = new Capture(this);
-  cam.start();   
+  cam.start();
   live = true;
   if (video != null) {
     video.stop();
@@ -239,8 +239,9 @@ void prepareVideo() {
     video.jump(0);
     video.loop();
     video.play();
+    video.volume(0);
     video.read();
-    live = false;        
+    live = false;
   }
 }
 

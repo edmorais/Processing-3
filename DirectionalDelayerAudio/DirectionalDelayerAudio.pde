@@ -1,20 +1,21 @@
 /*
- * Delayer - microphone controlled
- * by Eduardo Morais 2015 - www.eduardomorais.pt
- *
+ * Directional Delayer - audio controlled
+ * by Eduardo Morais 2016 - www.eduardomorais.pt
+ 
+ * You can drag and drop video files into the sketch window
+ * Press C to go back to webcam, S to save screenshot
  */
-
 
 import processing.video.*;
 import processing.sound.*;
-import drop.*;
+import drop.*; // third-party library 
 import java.util.*;
 import java.text.*;
 
 /* options */
-int cam_x = 960;
-int cam_y = 540;
-float cam_mult = 1;
+int cam_x = 1280; // video/cam input dimensions
+int cam_y = 720;
+float cam_mult = 1; // canvas dimension ratio
 float mic_level = 1;
 
 /* & declarations */
@@ -44,7 +45,7 @@ final int GRADIENT_LR = 1;
 final int GRADIENT_RL = 2;
 final int GRADIENT_TB = 3;
 final int GRADIENT_BT = 4;
-int mode = RAND;
+int mode = GRADIENT_LR;
 
 boolean showMap = false; // show delay map
 
@@ -188,12 +189,13 @@ void draw() {
     offsets();
   }
   if (rms.analyze() > 0.5) {
-    mode = (int) random(0, 5);
+    mode = (int) random(1, 5);
     offsets();
   }
 }
 
 void keyPressed() {
+  /*
   if (key == CODED) {
     if (keyCode == LEFT && delay > 0) {
       delay--;
@@ -203,12 +205,14 @@ void keyPressed() {
     }
     offsets();
   }
+  */
   if (key == 'm' || key == 'M') {
     showMap = true;
   }
 }
 
 void keyReleased() {
+  /*
   if (key >= '1' && key <= '5') {
     if (mode != key - '1') {
       mode = key - '1';
@@ -216,7 +220,8 @@ void keyReleased() {
       background(0);
     }
   }
-
+  */
+  
   if (key == 'c' || key == 'C') {
     live = !live;
     // prepareCamera();
@@ -292,6 +297,7 @@ void prepareVideo() {
     video.jump(0);
     video.loop();
     video.play();
+    video.volume(0);
     video.read();
     live = false;
   }
