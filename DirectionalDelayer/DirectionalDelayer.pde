@@ -1,16 +1,16 @@
 /*
  * Directional Delayer - keyboard controlled
  * by Eduardo Morais 2016 - www.eduardomorais.pt
- 
+
  * You can drag and drop video files into the sketch window
  * Press C to go back to webcam, S to save screenshot
- *       1 - 5 select mode, 
+ *       1 - 5 select mode,
  *       left/right arrows to set the delay
  *
  */
 
 import processing.video.*;
-import drop.*; // third-party library 
+import drop.*; // third-party library
 import java.util.*;
 import java.text.*;
 
@@ -200,7 +200,7 @@ void keyReleased() {
       background(0);
     }
   }
-  
+
   if (key == 'c' || key == 'C') {
     live = !live;
     // prepareCamera();

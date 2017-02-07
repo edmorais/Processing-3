@@ -13,8 +13,8 @@ import java.util.*;
 import java.text.*;
 
 /* options */
-int cam_x = 1280; // video/cam input dimensions
-int cam_y = 720;
+int cam_x = 640; // video/cam input dimensions
+int cam_y = 480;
 float cam_mult = 1; // canvas dimension ratio
 float mic_level = 1;
 
