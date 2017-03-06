@@ -1,34 +1,46 @@
 /*
- * Hockney - microphone controlled
+ * Hockney Delayer - audio controlled
  * by Eduardo Morais 2016 - www.eduardomorais.pt
- *
+ 
+ * You can drag and drop video files into the sketch window
+ * Press C to go back to webcam, S to save screenshot
  */
 
 import processing.video.*;
 import processing.sound.*;
+import drop.*;
 import java.util.*;
 import java.text.*;
 
 /* options */
-int grid_x = 12;
-int grid_y = 9;
-int border = 1;
-int buffer_max = 60;
-float mic_level = 0.9;
-int scale_factor = 2;
+int grid_x = 9;
+int grid_y = 5;
+int border = 0;
+int buffer_max = 150;
+float mic_level = 1;
+int scale_factor = 1;
 
 /* declarations */
+PGraphics feed;
 Capture cam;
-Movie vid;
+Movie video;
+String videoFile;
+boolean live = true;
 AudioIn input;
 Amplitude rms;
 PImage[] buffer;
+boolean dragged = false;
+boolean stopped = false;
+SDrop drop; // drag and drop object
 
-int cam_x = 640;
-int cam_y = 480;
+int cam_x = 1024;
+int cam_y = 576;
 
-int jitter = 50;
+int jitter = 10;
 int delay = 20;
+
+// allowed video file extensions:
+String[] videoExts = {"mov", "avi", "mp4", "mpg", "mpeg"};
 
 PImage fragment = createImage(cam_x/grid_x, cam_y/grid_y, RGB);
 
@@ -46,32 +58,16 @@ void setup() {
   /* Init offsets & window */
 
   offsets();
+  feed = createGraphics(cam_x, cam_y);
 
   /* Init cameras */
 
   String[] cameras = Capture.list();
-
-  if (cameras == null) {
-    println("Failed to retrieve the list of available cameras, will try the default...");
-    cam = new Capture(this, 640, 480);
-  } 
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
     exit();
   } else {
-    println("Available cameras:");
-    for (int i = 0; i < cameras.length; i++) {
-      println(cameras[i]);
-    }
-
-    // The camera can be initialized directly using an element
-    // from the array returned by list():
-    cam = new Capture(this, cameras[0]);
-    // Or, the settings can be defined based on the text in the list
-    //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
-
-    // Start capturing the images from the camera
-    cam.start();
+    prepareCamera();
     buffer = new PImage[buffer_max];
   }
 
@@ -83,6 +79,9 @@ void setup() {
   rms = new Amplitude(this);
   // Patch the input to an volume analyzer
   rms.input(input);
+
+
+  drop = new SDrop(this);
 }
 
 /* prepare fragment offsets */
@@ -117,11 +116,23 @@ void offsets() {
 /* D R A W - - - - - */
 void draw() {
   scale(scale_factor);
-  /* camera */
-  if (cam.available() == true) {
+  boolean ok = false;
+  feed.beginDraw();
+  if (live && cam != null && cam.available()) {
     cam.read();
+    feed.image(cam, 0, 0, feed.width, feed.height);
+    ok = true;
+  } else if (video != null && video.available()) {
+    video.read();
+    feed.image(video, 0, 0, feed.width, feed.height);
+    ok = true;
+  }
+  feed.endDraw();
 
-    buffer[0] = cam.get();
+  /* camera */
+  if (ok) {
+
+    buffer[0] = feed.get();
 
     // move the framebuffer:
     for (int tx = delay-2; tx >= 0; tx--) {
@@ -138,17 +149,21 @@ void draw() {
 
         if (buffer[offsets_t[gx*gy]] != null) {
           fragment.copy(buffer[offsets_t[gx*gy]], gx*(cam_x/grid_x) + offsets_x[gx*gy], gy*(cam_y/grid_y) + offsets_y[gx*gy], cam_x/grid_x, cam_y/grid_y, 0, 0, cam_x/grid_x, cam_y/grid_y);
-          tint(255,255-2.5*random(0,jitter));
-          image(fragment, x+(random(-jitter,jitter)/10), y+(random(-jitter,jitter)/10));
+          tint(255, 210-2.0*random(0, jitter));
+          image(fragment, x+(random(-jitter, jitter)/5), y+(random(-jitter, jitter)/5), 
+                fragment.width+random(0,jitter), fragment.height+random(jitter));
         }
       }
     }
   }
 
   /* microphone */
+  jitter = 0;
   if (rms.analyze() > 0.01) {
     delay = (int) map(rms.analyze(), 0, 1, 0, buffer_max);
-    jitter = (int) map(rms.analyze(), 0, 1, 2, 100);
+    if (rms.analyze() > 0.2) {
+      jitter = (int) map(rms.analyze(), 0, 1, 0, 100);
+    }
     offsets();
   }
 }
@@ -171,14 +186,96 @@ void keyPressed() {
   }
 }
 
+
+
+/*
+ * Select video file
+ */
+void selectVideo(File selection) {
+  if (selection == null) {
+    println("Window was closed or the user hit cancel.");
+    videoFile = null;
+  } else {
+    println("User selected " + selection.getAbsolutePath());
+    String fn = selection.getName();
+    String fext = fn.substring(fn.lastIndexOf(".") + 1, fn.length());
+    String ext;
+    boolean ok = false;
+
+    for (int i = 0; i < videoExts.length; i++) {
+      ext = videoExts[i];
+      if (ext.equalsIgnoreCase(fext)) {
+        ok = true;
+        break;
+      }
+    }
+
+    if (ok) {
+      videoFile = selection.getAbsolutePath();
+      boolean s = stopped;
+      stopped = true;
+      prepareVideo();
+      stopped = s;
+    } else if (!dragged) {
+      selectInput("Please select a supported video file...", "selectVideo");
+    }
+  }
+  dragged = false;
+}
+
+void prepareCamera() {
+  cam = new Capture(this);
+  cam.start();
+  live = true;
+  if (video != null) {
+    video.stop();
+  }
+}
+
+
+/*
+ * PREPARE VIDEO FILE
+ */
+void prepareVideo() {
+  if (videoFile != null) {
+    if (video != null) {
+      video.stop();
+    }
+    video = new Movie(this, videoFile);
+    video.jump(0);
+    video.loop();
+    video.play();
+    video.volume(0);
+    video.read();
+    live = false;
+  }
+}
+
+
 void keyReleased() {
   if (key == ' ') {
     offsets();
+  }
+
+  if (key == 'c' || key == 'C') {
+    live = !live;
+    // prepareCamera();
   }
 
   if (key == 's' || key == 'S') {
     Date now = new Date();
     SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
     save("hockney_" + df.format(now) + ".jpg");
+  }
+}
+
+
+/*
+ * Drag & drop
+ */
+void dropEvent(DropEvent dropped) {
+  if (dropped.isFile()) {
+    dragged = true;
+    selectVideo(dropped.file());
   }
 }

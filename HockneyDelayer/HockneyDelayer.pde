@@ -1,8 +1,11 @@
 /*
- * Hockney
+ * Hockney Delayer - keyboard controlled
  * by Eduardo Morais 2015 - www.eduardomorais.pt
+
+ * Press S to save screenshot
+ *       up/down arrows to set the jitter
+ *       left/right arrows to set the delay
  *
- */
 
 import processing.video.*;
 import java.util.*;
