@@ -5,7 +5,7 @@
  * Press S to save screenshot
  *       up/down arrows to set the jitter
  *       left/right arrows to set the delay
- *
+ */
 
 import processing.video.*;
 import java.util.*;
@@ -54,7 +54,7 @@ void setup() {
   } else {
     println("Available cameras:");
     for (int i = 0; i < cameras.length; i++) {
-      println(cameras[i]);
+      println(i, cameras[i]);
     }
 
     // The camera can be initialized directly using an element

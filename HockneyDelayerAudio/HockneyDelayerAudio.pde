@@ -15,7 +15,7 @@ import java.text.*;
 /* options */
 int grid_x = 9;
 int grid_y = 5;
-int border = 0;
+int border = 2;
 int buffer_max = 150;
 float mic_level = 1;
 int scale_factor = 1;
@@ -34,7 +34,7 @@ boolean stopped = false;
 SDrop drop; // drag and drop object
 
 int cam_x = 1024;
-int cam_y = 576;
+int cam_y = 768;
 
 int jitter = 10;
 int delay = 20;

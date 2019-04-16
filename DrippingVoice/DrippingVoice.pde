@@ -1,3 +1,8 @@
+/*
+ * Dripping Voice
+ * by Eduardo Morais 2015 - www.eduardomorais.pt
+ */
+
 import ddf.minim.spi.*;
 import ddf.minim.signals.*;
 import ddf.minim.*;
