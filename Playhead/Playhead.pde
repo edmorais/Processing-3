@@ -11,7 +11,7 @@ Env env;
 
 int plhead = 1000;
 int notesnum = 32;
-Dot[] notes;
+ArrayList<Dot> notes;
 float v = 2;
 float[] freqs = { 
   261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.26, 783.99, 880 };
@@ -24,15 +24,15 @@ void setup() {
   oscil2 = new TriOsc(this);
   env  = new Env(this); 
   
-  notes = new Dot[notesnum];
-  for (int i = 0; i < notes.length; i++) {
-    float ny = map(i, 0, notes.length-1, 50, height - 50);
+  notes = new ArrayList<Dot>();
+  for (int i = 0; i < notesnum; i++) {
+    float ny = map(i, 0, notesnum-1, 50, height - 50);
     float nvel = random (0.5, 1.5);
     color nc = color(random(0,150),random(50,150),random(50, 255));
     int nf = int(random(0, freqs.length));
        
     //   Dot(float px, float py, float pvel, color pc, float pd, float pfreq) 
-    notes[i] = new Dot(random(-width, -50), ny, nvel, nc, random(30, 50), freqs[nf]);
+    notes.add(new Dot(random(-width, -50), ny, nvel, nc, random(30, 50), freqs[nf]));
   }
 }
 
@@ -43,8 +43,9 @@ void draw() {
   
   // update
   plhead = mouseX;
-  for (int i = 0; i < notes.length; i++) {
-    notes[i].update(v);
+  for (int i = 0; i < notes.size(); i++) {
+    Dot note = notes.get(i);
+    note.update(v);
   }
     
   // display
@@ -53,8 +54,9 @@ void draw() {
   line(plhead,0,plhead,height); // playhead 
   
   int cur = 0;
-  for (int i = 0; i < notes.length; i++) {
-    cur += notes[i].display();
+  for (int i = 0; i < notes.size(); i++) {
+    Dot note = notes.get(i);
+    cur += note.display();
   }
   if (cur > 0) { cursor(HAND); } else { cursor(ARROW); }
   
