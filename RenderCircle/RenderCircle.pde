@@ -1,3 +1,8 @@
+/*
+ * Draw a Circle the Hard Way
+ * by Eduardo Morais 2019 - www.eduardomorais.pt
+ */
+
 float r = 150;
 int x = 0;
 int y = 0;

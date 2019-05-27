@@ -79,6 +79,11 @@ class PSystem {
       speed = pspeed;
   }
 
+  // set turbulence for new particles
+  void setTurbo(float pturbo) {
+      turbulence = pturbo;
+  }
+
   // set new velocity vector for all particles
   void setVelocity(PVector pvel) {
     for (int i = 0; i < particles.length; i ++) {

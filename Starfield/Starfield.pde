@@ -16,6 +16,7 @@ PVector EMMITER 		= new PVector(1280, 72);
 PVector ORIGIN 			= new PVector(640, 0);
 boolean CENTER_ORIGIN 	= false;
 PVector	VELOCITY 		= new PVector(0, 2); // 0, 0 : away from CENTER
+float 	ROTATION 		= 0;
 */
 
 /* starfield */
@@ -23,28 +24,37 @@ PVector EMMITER 		= new PVector(128, 72);
 PVector ORIGIN 			= new PVector(0, 0);
 boolean CENTER_ORIGIN 	= true;
 PVector	VELOCITY 		= new PVector(0, 0); // 0, 0 : away from CENTER
+float 	ROTATION 		= 0.1;
 
 float 	SPEED_MAX 		= 3;
 float 	TURBULENCE 		= 0.3;
 int 	LIFE_MIN 		= 200;
 int 	LIFE_MAX 		= 1000;
 int 	WEIGHT 			= 3;
+
 color[] COLORS 			= {	color(255,0,0, 100),
 							color(255,100,0, 180),
 							color(255),
 							color(255, 200),
 							color(0,100,255, 180) };
 
-PSystem ps;
+// color[] COLORS		= {color(255,0), color(255), color(255,0)}; // alphascale
 
+color 	BGCOLOR 		= 0;
+// color BGCOLOR 		= #221DC2; // IKB
+
+PSystem ps;
+float rot = 0;
 int mode = 1;
+boolean looping = true;
 
 void setup() {
 		size(1280, 720);
 		if (CENTER_ORIGIN) ORIGIN = new PVector(width/2, height/2);
 	
 		init();
-		background(0);
+		background(BGCOLOR);
+		noCursor();
 }
 
 void init() {
@@ -61,7 +71,7 @@ void init() {
 
 void draw() {
 		// trails thingy:
-		fill(0, 64);
+		fill(BGCOLOR, 64);
 		noStroke();
 		rect(0,0,width,height);
 		noFill();
@@ -69,6 +79,12 @@ void draw() {
 		// translate, update, display:
 		pushMatrix();
 		translate(ORIGIN.x, ORIGIN.y);
+		if (CENTER_ORIGIN) {
+			rot += ROTATION;
+			if (rot > 360) rot -= 360;
+			rotate(radians(rot));	
+		}
+		
 
 		ps.update();
 		ps.display();
@@ -92,32 +108,22 @@ void keyReleased() {
 			}
 		}
 
-		// weight
-		if (key == 'w' && WEIGHT < 20) {
-			WEIGHT++;
-			ps.setWeight(WEIGHT);
-		}
-		if (key == 'W' && WEIGHT > 1) {
-			WEIGHT--;
-			ps.setWeight(WEIGHT);
-		}
-
-		// speed
-		if (keyCode == UP && SPEED_MAX < 20) {
-			SPEED_MAX++;
-			ps.setSpeed(SPEED_MAX);
-		}
-		if (keyCode == DOWN && SPEED_MAX > 1) {
-			SPEED_MAX--;
-			ps.setSpeed(SPEED_MAX);
-		}
-
 		// reset
-		if (key == 'r') {
+		if (key == '|') {
 			init();
 		}
-		if (key == 'R') {
+		if (key == '\\') {
 			setup();
+		}
+		if (key == 'P' || key == 'p') {
+			if (looping) {
+				looping = false;
+				noLoop();
+			} else {
+				looping = true;
+				loop();
+			}
+			
 		}
 
 		// switch mode
@@ -128,12 +134,53 @@ void keyReleased() {
 				ORIGIN 			= new PVector(0, 0);
 				CENTER_ORIGIN 	= true;
 				VELOCITY 		= new PVector(0, 0); // 0, 0 : away from CENTER
+				ROTATION		= 0.1;
 			} else {
 				EMMITER 		= new PVector(1280, 72);
 				ORIGIN 			= new PVector(640, 0);
 				CENTER_ORIGIN 	= false;
 				VELOCITY 		= new PVector(0, 2); // 0, 0 : away from CENTER
+				ROTATION		= 0;
 			}
 			setup();
 		}
+}
+
+void keyPressed() {
+		if (key == ' ') redraw();
+		// speed
+		if (keyCode == UP && SPEED_MAX < 20) {
+			SPEED_MAX += 0.25;
+			ps.setSpeed(SPEED_MAX);
+		}
+		if (keyCode == DOWN && SPEED_MAX > 1) {
+			SPEED_MAX -= 0.25;
+			ps.setSpeed(SPEED_MAX);
+		}
+		// rotation
+		if (keyCode == LEFT && ROTATION > -5) {
+			ROTATION -= 0.1;
+		}
+		if (keyCode == RIGHT && ROTATION < 5) {
+			ROTATION += 0.1;
+		}
+		// weight
+		if (key == 'w' && WEIGHT < 20) {
+			WEIGHT++;
+			ps.setWeight(WEIGHT);
+		}
+		if (key == 'W' && WEIGHT > 1) {
+			WEIGHT--;
+			ps.setWeight(WEIGHT);
+		}
+		// turbulence
+		if (key == 't' && TURBULENCE < 3) {
+			TURBULENCE+=0.01;
+			ps.setTurbo(TURBULENCE);
+		}
+		if (key == 'T' && TURBULENCE > 0) {
+			TURBULENCE-=0.01;
+			ps.setTurbo(TURBULENCE);
+		}
+
 }
