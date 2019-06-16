@@ -1,4 +1,9 @@
 /*
+   ____   __                 __       __  ___              _   
+  / __/__/ /_ _____ ________/ /__    /  |/  /__  _______ _(_)__
+ / _// _  / // / _ `/ __/ _  / _ \  / /|_/ / _ \/ __/ _ `/ (_-<
+/___/\_,_/\_,_/\_,_/_/  \_,_/\___/ /_/  /_/\___/_/  \_,_/_/___/
+ 
  * Dripping Voice
  * by Eduardo Morais 2015 - www.eduardomorais.pt
  */
@@ -20,7 +25,7 @@ color cor;
 int cl = 128;
 
 void setup() {
-   size(1024,640);
+   size(1024,1024);
    background(255);
    minim = new Minim(this);
    in = minim.getLineIn();

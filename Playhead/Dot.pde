@@ -56,7 +56,7 @@ class Dot {
       playing = false;
     }
     if (ismouseover()) {
-      cor = color(random(0,150),random(50,150),random(50, 255));
+      cor = color(random(0,150),random(50,150),random(100, 255));
       fill(255,0,0,16);
       r = 1;
     }

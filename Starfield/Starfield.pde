@@ -1,9 +1,22 @@
 /*
- * Particle Starfield
+   ____   __                 __       __  ___              _   
+  / __/__/ /_ _____ ________/ /__    /  |/  /__  _______ _(_)__
+ / _// _  / // / _ `/ __/ _  / _ \  / /|_/ / _ \/ __/ _ `/ (_-<
+/___/\_,_/\_,_/\_,_/_/  \_,_/\___/ /_/  /_/\___/_/  \_,_/_/___/
+ 
+   Particle Starfield
  * by Eduardo Morais 2019 - www.eduardomorais.pt
  *
- * Drag mouse to recenter. 
- * C to randomize colors. R to reset (shift-R: hard reset).
+ * Drag mouse to recenter. LEFT/RIGHT: Rotate
+ * -
+ * More keyboard actions:
+ * UP/DOWN: Particle speed 		W/shift-W: Particle size		
+ * T/shift-T: Turbulence 		C: Randomize colours
+ * P: Toggle pause/resume
+ *
+ * M: Experimental mode toggle (snowfall)
+ *
+ * Backslash/shift-backslash: Reset (hard)
  */
 
 

@@ -1,3 +1,7 @@
+/*
+  Multiple Windows template
+ */
+
 SecondApplet sa;
 ThirdApplet ta;
 String[] args = {""};

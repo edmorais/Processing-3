@@ -1,4 +1,9 @@
 /*
+   ____   __                 __       __  ___              _   
+  / __/__/ /_ _____ ________/ /__    /  |/  /__  _______ _(_)__
+ / _// _  / // / _ `/ __/ _  / _ \  / /|_/ / _ \/ __/ _ `/ (_-<
+/___/\_,_/\_,_/\_,_/_/  \_,_/\___/ /_/  /_/\___/_/  \_,_/_/___/
+ 
  * Playhead
  * by Eduardo Morais 2019 - www.eduardomorais.pt
  *
@@ -20,8 +25,9 @@ float[] freqs = {
 // frequencies (Hz) corresponding to two octaves in the pentatonic scale (CDEGA)
 
 void setup() {
-	size(1200, 800);
+	size(800, 800);
 	background(255);
+
 	oscil = new TriOsc(this);
 	oscil2 = new TriOsc(this);
 	env  = new Env(this);
@@ -35,7 +41,7 @@ void setup() {
 
 void addnote() {
   	float nvel = random (0.5, 1.5);
-  	color nc = color(random(0,150),random(50,150),random(50, 255));
+  	color nc = color(random(0,150),random(50,150),random(100, 255));
   	int nf = int(random(0, freqs.length));
 
     //   Dot(float px, float py, float pvel, color pc, float pd, float pfreq) 
