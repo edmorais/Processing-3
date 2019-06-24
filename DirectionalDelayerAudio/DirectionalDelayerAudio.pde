@@ -18,10 +18,13 @@ import java.util.*;
 import java.text.*;
 
 /* options */
-int cam_x = 640; // video/cam input dimensions
-int cam_y = 480;
+int cam_x = 1280; // video/cam input dimensions
+int cam_y = 720;
 float cam_mult = 1; // canvas dimension ratio
 float mic_level = 1;
+boolean dithering = false; // dithering
+float dither = 0;
+
 
 /* & declarations */
 PGraphics feed;
@@ -50,7 +53,7 @@ final int GRADIENT_LR = 1;
 final int GRADIENT_RL = 2;
 final int GRADIENT_TB = 3;
 final int GRADIENT_BT = 4;
-int mode = GRADIENT_LR;
+int mode = RAND;
 
 boolean showMap = false; // show delay map
 
@@ -58,10 +61,9 @@ boolean showMap = false; // show delay map
 void settings() {
   size(round(cam_x*cam_mult), round(cam_y*cam_mult));
 }
-
 void setup() {
-  // size(round(cam_x*cam_mult), round(cam_y*cam_mult)); // remove in P3
   background(0);
+  smooth();
 
   /* Init offsets & window */
 
@@ -102,7 +104,8 @@ void offsets() {
   if (delay >= buffer_max) {
     delay = buffer_max - 1;
   }
-
+  dither = 0;
+  
   if (mode == RAND) {
     for (int i = 0; i < offsets.length; i++) {
       float r = random(0, delay);
@@ -111,29 +114,43 @@ void offsets() {
   }
   // horizontal gradient
   if (mode == GRADIENT_LR || mode == GRADIENT_RL) {
+    if (dithering) dither = ceil(width/cam_x)*2;
     for (int x = 0; x < cam_x; x++) {
       float o = 0;
+      float so = 0;
       if (mode == GRADIENT_LR) {
         o = map(x, 0, cam_x, 0, delay);
       } else if (mode == GRADIENT_RL) {
         o = map(x, cam_x, 0, 0, delay);
       }
       for (int y = 0; y < cam_y; y++) {
-        offsets[y*cam_x+x] = o;
+        so = o;
+        if (dithering) {
+          so += random(-dither,dither);
+          so = constrain(so, 0, delay);
+        }
+        offsets[y*cam_x+x] = so;
       }
     }
   }
   // vertical gradient
   if (mode == GRADIENT_TB || mode == GRADIENT_BT) {
+    if (dithering) dither = ceil(height/cam_y)*2;
     for (int y = 0; y < cam_y; y++) {
       float o = 0;
+      float so = 0;
       if (mode == GRADIENT_TB) {
         o = map(y, 0, cam_y, 0, delay);
       } else if (mode == GRADIENT_BT) {
         o = map(y, cam_y, 0, 0, delay);
       }
       for (int x = 0; x < cam_x; x++) {
-        offsets[y*cam_x+x] = o;
+        so = o;
+        if (dithering) {
+          so += random(-dither,dither);
+          so = constrain(so, 0, delay);
+        }
+        offsets[y*cam_x+x] = so;
       }
     }
   }
@@ -200,33 +217,13 @@ void draw() {
 }
 
 void keyPressed() {
-  /*
-  if (key == CODED) {
-    if (keyCode == LEFT && delay > 0) {
-      delay--;
-    }
-    if (keyCode == RIGHT && delay < buffer_max) {
-      delay++;
-    }
-    offsets();
-  }
-  */
   if (key == 'm' || key == 'M') {
     showMap = true;
   }
 }
 
 void keyReleased() {
-  /*
-  if (key >= '1' && key <= '5') {
-    if (mode != key - '1') {
-      mode = key - '1';
-      offsets();
-      background(0);
-    }
-  }
-  */
-  
+
   if (key == 'c' || key == 'C') {
     live = !live;
     // prepareCamera();
@@ -234,6 +231,11 @@ void keyReleased() {
 
   if (key == 'm' || key == 'M') {
     showMap = false;
+  }
+
+  if (key == 'd' || key == 'D') {
+    dithering = !dithering;
+    offsets();
   }
 
   if (key == 's' || key == 'S') {
