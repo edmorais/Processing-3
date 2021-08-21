@@ -7,6 +7,8 @@
  * Waveform Monitor
  * by Eduardo Morais 2019 - www.eduardomorais.pt
  *
+ * Might grow into its own thing.
+ *
  * Drag and drop to play video files.
  * -
  * Keyboard actions:
@@ -21,8 +23,8 @@ import java.util.*;
 import java.text.*;
 
 /* options */
-int cam_x = 1280; // video/cam input dimensions
-int cam_y = 720;
+int cam_x = 640; // video/cam input dimensions
+int cam_y = 480;
 float cam_mult = 1; // canvas dimension ratio (for HiDPI, etc)
 int vert_smooth = 2; // vertical smoothness 
 

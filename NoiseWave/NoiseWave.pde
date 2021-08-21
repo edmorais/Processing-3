@@ -22,13 +22,14 @@ import ddf.minim.effects.*;
 
 float[] noisey; 
 int reso = 3;
+int size = 720;
 int size_mult = 1;
 Minim minim;
 AudioInput in;
 boolean horizontal = false;
 
 void settings() {
-  size(720*size_mult,720*size_mult);
+  size(size*size_mult,size*size_mult);
 }
 void setup(){
   background(255);
@@ -36,42 +37,34 @@ void setup(){
   strokeWeight(size_mult);
   smooth();
   frameRate(60);
-  noisey = new float[width];
-
+  
   /* Init microphone */
-   minim = new Minim(this);
-   in = minim.getLineIn();
-
+  minim = new Minim(this);
+  in = minim.getLineIn();
+  noisey = new float[in.bufferSize()];
 }
  
 void draw(){
   background(255);
   float scale = 0.005;
 
-  int large = width;
-  int small = height;
-  if (small > large) {
-    small = width;
-    large = height;
-  }
-
   /* 1D Noise */
-  for (int i = 0; i < large; i += reso*size_mult) {
-    // int bpos = int(map(i, 0, in.bufferSize(), 0, large));  // pos
-    noisey[i] = small*(noise(scale*i, frameCount*scale)+in.mix.get(i)/4);
+  for (int i = 0; i < noisey.length; i += reso*size_mult) {
+    // int bpos = int(map(i, 0, in.bufferSize(), 0, width));  // pos
+    noisey[i] = height*(noise(scale*i, frameCount*scale)+in.mix.get(i)/4);
   }
 
-  for (int i = 0; i < small/3; i += 10*size_mult) {
-    float cn = norm(i, 0, small/3);
+  for (int i = 0; i < height/3; i += 10*size_mult) {
+    float cn = norm(i, 0, height/3);
     stroke(lerpColor(color(0,0,255),color(255,0,0),cn));
     beginShape();
     if (horizontal) {
-      for(int x = 0; x<large;x+=reso*size_mult){
-        vertex(x,noisey[x]+i-small/6);
+      for(int x = 0; x<width;x+=reso*size_mult){
+        vertex(x,noisey[x]+i-height/6);
       }  
     } else {
-      for(int y = 0; y<large;y+=reso*size_mult){
-        vertex(noisey[y]+i-small/6, y);
+      for(int y = 0; y<width;y+=reso*size_mult){
+        vertex(noisey[y]+i-height/6, y);
       }
     }
     endShape();
